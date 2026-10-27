@@ -1,25 +1,17 @@
-# RFID Smart Attendance Dashboard
+# RFID Card Review & Attendance Dashboard
 
-Static HTML/CSS/JavaScript dashboard for an ESP32 MFRC522 RFID reader, using Firebase Authentication and Realtime Database.
+A static Firebase web dashboard for reviewing RFID UIDs uploaded by an ESP32. Users can approve/reject each UID and save student name, roll number, department, year/class and notes.
 
-## Setup
+## Firebase setup
+1. In Firebase Authentication, enable Email/Password and create a dashboard user.
+2. Copy the Web API key from Project settings > General and replace `YOUR_FIREBASE_WEB_API_KEY` in `index.html`.
+3. Configure Realtime Database rules to allow authenticated dashboard users to read `/scannedUIDs` and `/cards`, and write `/cards`. Allow the ESP32 device account to write `/scannedUIDs`.
+4. Upload these files to GitHub and import the repository in Vercel. No build command is needed.
 
-1. In Firebase Console, enable Authentication > Email/Password and create a dashboard user.
-2. Copy the Web API key from Project settings > General.
-3. Open `index.html` and replace `YOUR_FIREBASE_WEB_API_KEY`.
-4. Ensure Realtime Database rules allow the signed-in dashboard user to read `/scannedUIDs`, and the ESP32 device account to write to it.
-5. Commit these files to a GitHub repository and import the repository into Vercel. No build command is needed.
-
-## Expected data
-
-The ESP32 posts records such as:
-
-```json
-{ "uid": "04A12BC3" }
-```
-
-The dashboard listens to `/scannedUIDs` and displays up to the latest 500 records.
+## Data flow
+- ESP32 writes only `{ "uid": "04A12BC3" }` under `/scannedUIDs`.
+- Dashboard writes human-reviewed card metadata separately under `/cards/{UID}`.
+- Approve/reject status does not automatically change what the ESP32 accepts. If access decisions must affect hardware, firmware/backend logic must check approved status before treating a card as accepted.
 
 ## Security
-
-Do not commit passwords or service-account credentials. Use Firebase Authentication and restrictive Realtime Database rules. This dashboard uses the Firebase Web SDK; the API key identifies the project and is not a password.
+Use restrictive rules and appropriate accounts. Do not put Firebase passwords or service-account credentials in the repository. For production, enforce roles and approval permissions in database rules or a trusted backend.

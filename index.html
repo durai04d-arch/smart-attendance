@@ -32,7 +32,7 @@ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getDatabase,ref,onValue,query,limitToLast} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 // Replace the API key below with the Web API key from Firebase Console.
-const firebaseConfig={apiKey:"YOUR_FIREBASE_WEB_API_KEY",authDomain:"smartattendance-7923.firebaseapp.com",databaseURL:"https://smartattendance-7923-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"smartattendance-7923",appId:"1:984874906904:web:ac6680d808b68a0fdc5a6d"};
+const firebaseConfig={apiKey:"AIzaSyCLA9wKHIN1QBsuDDsMDn83G9POi6ZbsN4",authDomain:"smartattendance-7923.firebaseapp.com",databaseURL:"https://smartattendance-7923-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"smartattendance-7923",appId:"1:984874906904:web:ac6680d808b68a0fdc5a6d"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const $=id=>document.getElementById(id);let scans=[],stopScans=null,stopConnection=null;
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginError").textContent="Signing in...";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginError").textContent="";$("loginForm").reset()}catch(err){console.error(err);$("loginError").textContent="Sign-in failed. Check your email/password and Firebase Authentication settings."}});

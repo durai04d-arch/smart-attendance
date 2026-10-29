@@ -1,93 +1,602 @@
-<!doctype html>
+```html
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RFID Card Review & Attendance</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RFID Smart Attendance Dashboard</title>
+
 <style>
-:root{color-scheme:dark;--bg:#0a1020;--panel:#111b2e;--line:#283750;--text:#edf2f7;--muted:#9aabc0;--blue:#3b82f6;--green:#34d399;--red:#fb7185;--amber:#fbbf24}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,Arial,sans-serif}.wrap{max-width:1200px;margin:auto;padding:24px}h1,h2,h3,p{margin-top:0}h1{font-size:23px;margin-bottom:4px}h2{font-size:18px;margin-bottom:8px}.muted{color:var(--muted)}.small{font-size:12px}.brand{display:flex;gap:12px;align-items:center}.logo{background:#1e3a5f;padding:12px;border-radius:14px;font-size:24px}.header,.row,.toolbar,.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.header{margin-bottom:24px}.panel,.metric,.login{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.metric .value{font-size:29px;font-weight:750;margin:10px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.btn{border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:white;cursor:pointer;font-weight:600}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.gray{background:#34445c}.btn.green{background:#047857}.btn.red{background:#9f1239}.btn.amber{background:#92400e}input,select,textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#0b1425;color:var(--text);font:inherit;margin:6px 0 12px}label{display:block;color:var(--muted);font-size:13px}textarea{min-height:72px;resize:vertical}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;min-width:580px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted)}.uid{font-family:monospace;color:#93c5fd;font-weight:700}.pill{display:inline-block;padding:5px 9px;border-radius:99px;font-size:11px;background:#26354b}.pill.pending{color:var(--amber)}.pill.approved{color:var(--green);background:#064e3b}.pill.rejected{color:#fda4af;background:#4c1020}.status{font-size:12px;color:var(--muted)}.empty{text-align:center;padding:24px;color:var(--muted)}.login{max-width:430px;margin:9vh auto}.hidden{display:none!important}.err{color:#fda4af;font-size:13px}.ok{color:#6ee7b7;font-size:13px}.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.foot{color:var(--muted);text-align:center;font-size:12px;padding:24px}.hint{font-size:12px;color:var(--muted);line-height:1.5}
-@media(max-width:850px){.metrics{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}@media(max-width:520px){.wrap{padding:14px}.metrics{grid-template-columns:1fr 1fr}.metric{padding:14px}.metric .value{font-size:24px}.formgrid{grid-template-columns:1fr}}
+:root {
+  --bg:#0b1120;
+  --panel:#111b2e;
+  --border:#293951;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --blue:#3b82f6;
+  --green:#10b981;
+  --red:#f43f5e;
+  --yellow:#f59e0b;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input,select,textarea { font:inherit; }
+button {
+  border:0;
+  padding:10px 14px;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+  background:var(--blue);
+}
+button:disabled { opacity:.5; cursor:not-allowed; }
+.green { background:#047857; }
+.red { background:#be123c; }
+.gray { background:#334155; }
+.yellow { background:#92400e; }
+.container { max-width:1200px; margin:auto; padding:24px; }
+header,.heading,.actions {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:14px;
+}
+header { margin-bottom:24px; }
+.brand { display:flex; align-items:center; gap:12px; }
+.logo {
+  background:#1e3a5f;
+  padding:13px;
+  border-radius:12px;
+  font-size:25px;
+}
+h1 { margin:0; font-size:23px; }
+h2 { margin:0 0 8px; font-size:18px; }
+p { color:var(--muted); }
+.small { font-size:12px; }
+.muted { color:var(--muted); }
+.panel,.metric,.login {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:20px;
+}
+.login { max-width:430px; margin:8vh auto; }
+.metrics {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:18px;
+}
+.metric-label { color:var(--muted); font-size:13px; }
+.metric-value { font-size:29px; font-weight:bold; margin-top:12px; overflow-wrap:anywhere; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+label { display:block; color:var(--muted); font-size:13px; margin-top:10px; }
+input,select,textarea {
+  width:100%;
+  padding:11px;
+  background:#0b1425;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin:6px 0;
+}
+textarea { min-height:70px; resize:vertical; }
+.formgrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.toolbar { display:flex; gap:10px; margin:18px 0; }
+.toolbar input { flex:1; min-width:100px; }
+.tablewrap { overflow-x:auto; margin-top:14px; }
+table { width:100%; min-width:570px; border-collapse:collapse; }
+th,td {
+  padding:12px 9px;
+  border-bottom:1px solid var(--border);
+  text-align:left;
+  font-size:13px;
+}
+th { color:var(--muted); }
+.uid { color:#93c5fd; font-family:monospace; font-weight:bold; }
+.badge {
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:11px;
+  background:#334155;
+}
+.badge.approved { color:#6ee7b7; background:#064e3b; }
+.badge.rejected { color:#fda4af; background:#4c1020; }
+.badge.pending { color:#fcd34d; background:#422006; }
+.empty { text-align:center; padding:25px; color:var(--muted); }
+.message { font-size:13px; margin-top:12px; overflow-wrap:anywhere; }
+.error { color:#fda4af; }
+.success { color:#6ee7b7; }
+.hidden { display:none !important; }
+footer { text-align:center; color:var(--muted); padding:25px; font-size:12px; }
+@media(max-width:850px) {
+  .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid { grid-template-columns:1fr; }
+}
+@media(max-width:500px) {
+  .container { padding:12px; }
+  .panel,.metric { padding:14px; }
+  .formgrid { grid-template-columns:1fr; }
+  h1 { font-size:19px; }
+}
 </style>
 </head>
-<body>
-<section id="loginScreen" class="wrap login">
-<div class="brand"><div class="logo">📡</div><div><h1>RFID Card Review</h1><p class="muted small">Sign in to manage cards and attendance</p></div></div>
-<form id="loginForm"><label>Email</label><input id="email" type="email" required autocomplete="username"><label>Password</label><input id="password" type="password" required autocomplete="current-password"><button class="btn" type="submit">Sign in</button><p id="loginMessage" class="err"></p></form>
-</section>
-<main id="dashboard" class="wrap hidden">
-<header class="header"><div class="brand"><div class="logo">📡</div><div><h1>RFID Card Review & Attendance</h1><div class="muted small">Review new UIDs, approve or reject cards, and assign student details.</div></div></div><div class="actions"><span class="status" id="connection">Connecting to Firebase…</span><button class="btn gray" id="logout">Sign out</button></div></header>
-<section class="metrics">
-<div class="metric"><div class="muted small">Pending review</div><div class="value" id="pendingCount">0</div></div>
-<div class="metric"><div class="muted small">Approved cards</div><div class="value" id="approvedCount">0</div></div>
-<div class="metric"><div class="muted small">Rejected cards</div><div class="value" id="rejectedCount">0</div></div>
-<div class="metric"><div class="muted small">UID scan events</div><div class="value" id="scanCount">0</div></div>
-</section>
-<section class="panel" style="margin-bottom:18px">
-<div class="sectionhead"><div><h2>New UID scans</h2><p class="muted small">New UIDs appear here for review. Select a UID to fill in its details.</p></div><input id="search" style="max-width:280px;margin:0" placeholder="Search UID or student"></div>
-<div class="tablewrap"><table><thead><tr><th>UID</th><th>Scans</th><th>Review status</th><th>Student</th><th>Action</th></tr></thead><tbody id="reviewRows"></tbody></table><div id="reviewEmpty" class="empty">No UID scans received yet.</div></div>
-</section>
-<div class="grid">
-<section class="panel">
-<h2>Review selected card</h2><p class="muted small">Approve a UID only after verifying the card and student.</p>
-<form id="cardForm">
-<label>RFID UID (read-only)</label><input id="cardUid" readonly required placeholder="Select a UID from the table">
-<div class="formgrid"><div><label>Student full name</label><input id="studentName" placeholder="Student name"></div><div><label>Roll number / Student ID</label><input id="rollNo" placeholder="Roll number"></div><div><label>Department</label><input id="department" placeholder="Department"></div><div><label>Year / Class</label><input id="year" placeholder="Year or class"></div></div>
-<label>Additional details</label><textarea id="notes" placeholder="Optional notes"></textarea>
-<div class="actions"><button type="button" class="btn green" id="approveBtn">Approve card</button><button type="button" class="btn red" id="rejectBtn">Reject card</button><button type="button" class="btn gray" id="saveBtn">Save details</button></div>
-<p id="formMessage" class="small"></p>
-</form>
-<p class="hint">Approval is stored in Firebase. This dashboard does not alter the ESP32 scan payload: the ESP32 still sends only the UID. Student details and approval status are stored separately by the website.</p>
-</section>
-<section class="panel">
-<div class="sectionhead"><div><h2>Approved card directory</h2><p class="muted small">Registered student information</p></div></div>
-<div class="tablewrap"><table><thead><tr><th>UID</th><th>Student</th><th>Roll no.</th><th>Status</th></tr></thead><tbody id="directoryRows"></tbody></table><div id="directoryEmpty" class="empty">No approved cards yet.</div></div>
-</section>
-</div>
-<footer class="foot">ESP32 RFID · Firebase Realtime Database · Vercel</footer>
-</main>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getDatabase,ref,onValue,update,set,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
 
-// Replace the API key with your Firebase Web API key.
-const firebaseConfig={apiKey:"AIzaSyCLA9wKHIN1QBsuDDsMDn83G9POi6ZbsN4",authDomain:"smartattendance-7923.firebaseapp.com",databaseURL:"https://smartattendance-7923-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"smartattendance-7923",appId:"1:984874906904:web:ac6680d808b68a0fdc5a6d"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
-const $=id=>document.getElementById(id);let unsubscribers=[],scans={},cards={},selectedUid="";
-$("loginForm").addEventListener("submit",async e=>{e.preventDefault();$("loginMessage").textContent="Signing in…";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);$("loginMessage").textContent=""}catch(err){console.error(err);$("loginMessage").textContent="Sign in failed. Check credentials and Firebase Authentication."}});
-$("logout").addEventListener("click",()=>signOut(auth));
-function cleanup(){unsubscribers.forEach(fn=>fn());unsubscribers=[]}
-onAuthStateChanged(auth,user=>{cleanup();if(!user){$("loginScreen").classList.remove("hidden");$("dashboard").classList.add("hidden");return}$("loginScreen").classList.add("hidden");$("dashboard").classList.remove("hidden");listen()});
-function listen(){
- unsubscribers.push(onValue(ref(db,".info/connected"),s=>{$("connection").textContent=s.val()?"Firebase connected":"Firebase disconnected"}));
- unsubscribers.push(onValue(ref(db,"scannedUIDs"),s=>{scans=s.val()||{};render()} ,e=>{$("connection").textContent="Scan read error: "+e.message}));
- unsubscribers.push(onValue(ref(db,"cards"),s=>{cards=s.val()||{};render()} ,e=>{$("connection").textContent="Card read error: "+e.message}));
+<body>
+
+<!-- LOGIN -->
+<section id="loginScreen" class="container login">
+  <div class="brand">
+    <div class="logo">📡</div>
+    <div>
+      <h1>RFID Attendance</h1>
+      <p class="small">Administrator login</p>
+    </div>
+  </div>
+
+  <form id="loginForm">
+    <label>Email</label>
+    <input id="email" type="email" required autocomplete="username">
+
+    <label>Password</label>
+    <input id="password" type="password" required autocomplete="current-password">
+
+    <button type="submit">Sign in</button>
+    <p id="loginMessage" class="message error"></p>
+  </form>
+</section>
+
+<!-- DASHBOARD -->
+<main id="dashboard" class="container hidden">
+
+<header>
+  <div class="brand">
+    <div class="logo">📡</div>
+    <div>
+      <h1>RFID Smart Attendance</h1>
+      <p class="small">Live UID monitoring and card approval</p>
+    </div>
+  </div>
+  <div class="actions">
+    <span id="connection" class="small muted">Connecting...</span>
+    <button id="logoutButton" class="gray">Sign out</button>
+  </div>
+</header>
+
+<section class="metrics">
+  <div class="metric">
+    <div class="metric-label">Pending cards</div>
+    <div class="metric-value" id="pendingCount">0</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Approved cards</div>
+    <div class="metric-value" id="approvedCount">0</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">Rejected cards</div>
+    <div class="metric-value" id="rejectedCount">0</div>
+  </div>
+  <div class="metric">
+    <div class="metric-label">UID scan events</div>
+    <div class="metric-value" id="scanCount">0</div>
+  </div>
+</section>
+
+<!-- UID LIST -->
+<section class="panel" style="margin-bottom:18px">
+  <div class="heading">
+    <div>
+      <h2>Scanned RFID cards</h2>
+      <p class="small">Select a UID to register or review it.</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input id="searchInput" type="search" placeholder="Search UID or student name">
+    <button id="clearSearch" class="gray">Clear</button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>RFID UID</th>
+          <th>Scans</th>
+          <th>Status</th>
+          <th>Student</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="uidRows"></tbody>
+    </table>
+    <div id="uidEmpty" class="empty">Waiting for RFID scans...</div>
+  </div>
+</section>
+
+<div class="grid">
+
+<!-- CARD REVIEW FORM -->
+<section class="panel">
+  <h2>Register / Review Card</h2>
+  <p class="small">Enter the student details and choose an approval decision.</p>
+
+  <form id="cardForm">
+    <label>RFID UID</label>
+    <input id="cardUid" readonly required placeholder="Select a UID above">
+
+    <div class="formgrid">
+      <div>
+        <label>Student full name</label>
+        <input id="studentName" placeholder="Full name">
+      </div>
+      <div>
+        <label>Roll number</label>
+        <input id="rollNo" placeholder="Student ID">
+      </div>
+      <div>
+        <label>Department</label>
+        <input id="department" placeholder="e.g. IoT">
+      </div>
+      <div>
+        <label>Year / Class</label>
+        <input id="year" placeholder="e.g. III Year">
+      </div>
+    </div>
+
+    <label>Additional notes</label>
+    <textarea id="notes" placeholder="Optional details"></textarea>
+
+    <div class="actions" style="margin-top:12px">
+      <button type="button" id="approveButton" class="green">Approve</button>
+      <button type="button" id="rejectButton" class="red">Reject</button>
+      <button type="button" id="saveButton" class="gray">Save details</button>
+    </div>
+
+    <p id="formMessage" class="message"></p>
+  </form>
+</section>
+
+<!-- APPROVED DIRECTORY -->
+<section class="panel">
+  <h2>Approved Student Cards</h2>
+  <p class="small">Registered cards and their student details.</p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>UID</th>
+          <th>Student</th>
+          <th>Roll number</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="directoryRows"></tbody>
+    </table>
+    <div id="directoryEmpty" class="empty">No approved cards yet.</div>
+  </div>
+</section>
+
+</div>
+<footer>ESP32 · MFRC522 · Firebase Realtime Database</footer>
+</main>
+
+<script type="module">
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+  getAuth, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+import {
+  getDatabase, ref, onValue, update, limitToLast, query
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+// 1. Replace the API key with your Firebase Web API key.
+const firebaseConfig = {
+  apiKey: "AIzaSyCLA9wKHIN1QBsuDDsMDn83G9POi6ZbsN4",
+  authDomain: "smartattendance-7923a.firebaseapp.com",
+  databaseURL: "https://smartattendance-7923a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smartattendance-7923a",
+  appId: "1:984874906904:web:ac6680d808b68a0fdc5a6d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const $ = id => document.getElementById(id);
+
+let scans = {};
+let cards = {};
+let selectedUID = "";
+let unsubscribeScans = null;
+let unsubscribeCards = null;
+let unsubscribeConnection = null;
+
+// LOGIN
+$("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  $("loginMessage").textContent = "Signing in...";
+
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("email").value.trim(),
+      $("password").value
+    );
+    $("loginMessage").textContent = "";
+    $("loginForm").reset();
+  } catch (error) {
+    console.error(error);
+    $("loginMessage").textContent =
+      "Login failed. Check your email, password and Firebase Authentication.";
+  }
+});
+
+$("logoutButton").addEventListener("click", () => signOut(auth));
+
+function stopListeners() {
+  if (unsubscribeScans) unsubscribeScans();
+  if (unsubscribeCards) unsubscribeCards();
+  if (unsubscribeConnection) unsubscribeConnection();
+
+  unsubscribeScans = null;
+  unsubscribeCards = null;
+  unsubscribeConnection = null;
 }
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
-function scanCounts(){const map={};Object.values(scans).forEach(r=>{if(r&&typeof r.uid==="string"){const u=r.uid.toUpperCase();map[u]=(map[u]||0)+1}});return map}
-function render(){
- const counts=scanCounts(),term=$("search").value.trim().toLowerCase();
- const allUIDs=[...new Set([...Object.keys(counts),...Object.keys(cards).map(x=>x.toUpperCase())])].sort();
- const filtered=allUIDs.filter(uid=>{const c=cards[uid]||cards[uid.toLowerCase()]||{};return uid.toLowerCase().includes(term)||String(c.studentName||"").toLowerCase().includes(term)||String(c.rollNo||"").toLowerCase().includes(term)});
- const pending=allUIDs.filter(uid=>!((cards[uid]||cards[uid.toLowerCase()]||{}).status)).length;
- const approved=Object.values(cards).filter(c=>c?.status==="approved").length,rejected=Object.values(cards).filter(c=>c?.status==="rejected").length;
- $("pendingCount").textContent=pending;$("approvedCount").textContent=approved;$("rejectedCount").textContent=rejected;$("scanCount").textContent=Object.keys(scans).length;
- $("reviewRows").replaceChildren();$("reviewEmpty").style.display=filtered.length?"none":"block";
- filtered.reverse().forEach(uid=>{const c=cards[uid]||cards[uid.toLowerCase()]||{},tr=document.createElement("tr");
- const status=c.status||"pending";const badge=`<span class="pill ${esc(status)}">${esc(status)}</span>`;
- tr.innerHTML=`<td class="uid">${esc(uid)}</td><td>${counts[uid]||0}</td><td>${badge}</td><td>${esc(c.studentName||"—")}</td><td><button class="btn gray" data-select="${esc(uid)}">Review</button></td>`;
- $("reviewRows").appendChild(tr)});
- document.querySelectorAll("[data-select]").forEach(b=>b.addEventListener("click",()=>selectCard(b.dataset.select)));
- const approvedCards=Object.entries(cards).filter(([uid,c])=>c?.status==="approved");
- $("directoryRows").replaceChildren();$("directoryEmpty").style.display=approvedCards.length?"none":"block";
- approvedCards.forEach(([uid,c])=>{const tr=document.createElement("tr");tr.innerHTML=`<td class="uid">${esc(uid)}</td><td>${esc(c.studentName||"—")}</td><td>${esc(c.rollNo||"—")}</td><td><span class="pill approved">approved</span></td>`;$("directoryRows").appendChild(tr)});
+
+onAuthStateChanged(auth, user => {
+  stopListeners();
+
+  if (!user) {
+    $("loginScreen").classList.remove("hidden");
+    $("dashboard").classList.add("hidden");
+    $("connection").textContent = "Signed out";
+    scans = {};
+    cards = {};
+    return;
+  }
+
+  $("loginScreen").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  startListeners();
+});
+
+// LIVE FIREBASE LISTENERS
+function startListeners() {
+  unsubscribeConnection = onValue(
+    ref(db, ".info/connected"),
+    snapshot => {
+      $("connection").textContent =
+        snapshot.val() ? "● Firebase connected" : "○ Firebase disconnected";
+    }
+  );
+
+  unsubscribeScans = onValue(
+    query(ref(db, "scannedUIDs"), limitToLast(500)),
+    snapshot => {
+      scans = snapshot.val() || {};
+      renderDashboard();
+    },
+    error => {
+      console.error("Scan listener error:", error);
+      $("connection").textContent = "Scan read error: " + error.message;
+    }
+  );
+
+  unsubscribeCards = onValue(
+    ref(db, "cards"),
+    snapshot => {
+      cards = snapshot.val() || {};
+      renderDashboard();
+    },
+    error => {
+      console.error("Card listener error:", error);
+      $("connection").textContent = "Card read error: " + error.message;
+    }
+  );
 }
-$("search").addEventListener("input",render);
-function selectCard(uid){selectedUid=uid.toUpperCase();$("cardUid").value=selectedUid;const c=cards[selectedUid]||cards[selectedUid.toLowerCase()]||{};$("studentName").value=c.studentName||"";$("rollNo").value=c.rollNo||"";$("department").value=c.department||"";$("year").value=c.year||"";$("notes").value=c.notes||"";$("formMessage").textContent="Selected UID: "+selectedUid}
-function formData(status){return {uid:selectedUid,studentName:$("studentName").value.trim(),rollNo:$("rollNo").value.trim(),department:$("department").value.trim(),year:$("year").value.trim(),notes:$("notes").value.trim(),status,updatedAt:Date.now(),updatedBy:auth.currentUser?.email||"dashboard"}}
-async function saveCard(status){if(!selectedUid){$("formMessage").textContent="Select a UID first.";return}try{await update(ref(db,"cards/"+selectedUid),formData(status));$("formMessage").className="ok";$("formMessage").textContent=status==="approved"?"Card approved and details saved.":status==="rejected"?"Card rejected and details saved.":"Student details saved."; }catch(e){console.error(e);$("formMessage").className="err";$("formMessage").textContent="Save failed: "+e.message}}
-$("approveBtn").addEventListener("click",()=>saveCard("approved"));
-$("rejectBtn").addEventListener("click",()=>saveCard("rejected"));
-$("saveBtn").addEventListener("click",()=>saveCard((cards[selectedUid]||{}).status||"pending"));
+
+function normalizedCards() {
+  const result = {};
+  for (const [key, value] of Object.entries(cards)) {
+    result[key.toUpperCase()] = value || {};
+  }
+  return result;
+}
+
+function getScanCounts() {
+  const counts = {};
+  for (const record of Object.values(scans)) {
+    if (record && typeof record.uid === "string") {
+      const uid = record.uid.trim().toUpperCase();
+      if (uid) counts[uid] = (counts[uid] || 0) + 1;
+    }
+  }
+  return counts;
+}
+
+// SAFE HTML TEXT CREATION
+function makeCell(row, value, className = "") {
+  const cell = document.createElement("td");
+  cell.textContent = value ?? "";
+  if (className) cell.className = className;
+  row.appendChild(cell);
+  return cell;
+}
+
+function makeBadge(status) {
+  const span = document.createElement("span");
+  span.className = "badge " + status;
+  span.textContent = status;
+  return span;
+}
+
+function renderDashboard() {
+  const counts = getScanCounts();
+  const cardMap = normalizedCards();
+  const allUIDs = [...new Set([
+    ...Object.keys(counts),
+    ...Object.keys(cardMap)
+  ])];
+
+  const pending = allUIDs.filter(uid =>
+    !["approved", "rejected"].includes(cardMap[uid]?.status)
+  ).length;
+
+  $("pendingCount").textContent = pending;
+  $("approvedCount").textContent =
+    Object.values(cardMap).filter(c => c.status === "approved").length;
+  $("rejectedCount").textContent =
+    Object.values(cardMap).filter(c => c.status === "rejected").length;
+  $("scanCount").textContent = Object.keys(scans).length;
+
+  const term = $("searchInput").value.trim().toLowerCase();
+  const filtered = allUIDs.filter(uid => {
+    const c = cardMap[uid] || {};
+    return uid.toLowerCase().includes(term) ||
+      String(c.studentName || "").toLowerCase().includes(term) ||
+      String(c.rollNo || "").toLowerCase().includes(term);
+  }).sort((a, b) => a.localeCompare(b));
+
+  $("uidRows").replaceChildren();
+  $("uidEmpty").style.display = filtered.length ? "none" : "block";
+  $("uidEmpty").textContent = allUIDs.length
+    ? "No cards match your search."
+    : "Waiting for RFID scans...";
+
+  filtered.forEach(uid => {
+    const c = cardMap[uid] || {};
+    const row = document.createElement("tr");
+
+    makeCell(row, uid, "uid");
+    makeCell(row, counts[uid] || 0);
+
+    const statusCell = document.createElement("td");
+    statusCell.appendChild(makeBadge(c.status || "pending"));
+    row.appendChild(statusCell);
+
+    makeCell(row, c.studentName || "—");
+
+    const actionCell = document.createElement("td");
+    const button = document.createElement("button");
+    button.className = "gray";
+    button.textContent = "Review";
+    button.addEventListener("click", () => selectUID(uid));
+    actionCell.appendChild(button);
+    row.appendChild(actionCell);
+
+    $("uidRows").appendChild(row);
+  });
+
+  const approved = Object.entries(cardMap)
+    .filter(([, c]) => c.status === "approved");
+
+  $("directoryRows").replaceChildren();
+  $("directoryEmpty").style.display = approved.length ? "none" : "block";
+
+  approved.forEach(([uid, c]) => {
+    const row = document.createElement("tr");
+    makeCell(row, uid, "uid");
+    makeCell(row, c.studentName || "—");
+    makeCell(row, c.rollNo || "—");
+
+    const statusCell = document.createElement("td");
+    statusCell.appendChild(makeBadge("approved"));
+    row.appendChild(statusCell);
+
+    $("directoryRows").appendChild(row);
+  });
+}
+
+// SELECT UID TO EDIT
+function selectUID(uid) {
+  selectedUID = uid.toUpperCase();
+  const c = normalizedCards()[selectedUID] || {};
+
+  $("cardUid").value = selectedUID;
+  $("studentName").value = c.studentName || "";
+  $("rollNo").value = c.rollNo || "";
+  $("department").value = c.department || "";
+  $("year").value = c.year || "";
+  $("notes").value = c.notes || "";
+
+  $("formMessage").className = "message";
+  $("formMessage").textContent = "Selected UID: " + selectedUID;
+}
+
+async function saveCard(status) {
+  if (!selectedUID) {
+    $("formMessage").className = "message error";
+    $("formMessage").textContent = "Select a UID from the table first.";
+    return;
+  }
+
+  const name = $("studentName").value.trim();
+  const roll = $("rollNo").value.trim();
+
+  if (status === "approved" && (!name || !roll)) {
+    $("formMessage").className = "message error";
+    $("formMessage").textContent =
+      "Enter the student's name and roll number before approval.";
+    return;
+  }
+
+  const data = {
+    uid: selectedUID,
+    studentName: name,
+    rollNo: roll,
+    department: $("department").value.trim(),
+    year: $("year").value.trim(),
+    notes: $("notes").value.trim(),
+    status: status,
+    updatedAt: Date.now(),
+    updatedBy: auth.currentUser?.email || "admin"
+  };
+
+  try {
+    $("formMessage").className = "message";
+    $("formMessage").textContent = "Saving...";
+
+    await update(ref(db, "cards/" + selectedUID), data);
+
+    $("formMessage").className = "message success";
+    $("formMessage").textContent =
+      status === "approved" ? "Card approved and details saved." :
+      status === "rejected" ? "Card rejected and details saved." :
+      "Student details saved.";
+  } catch (error) {
+    console.error(error);
+    $("formMessage").className = "message error";
+    $("formMessage").textContent =
+      "Save failed: " + error.message;
+  }
+}
+
+$("approveButton").addEventListener("click", () => saveCard("approved"));
+$("rejectButton").addEventListener("click", () => saveCard("rejected"));
+
+$("saveButton").addEventListener("click", () => {
+  const existing = normalizedCards()[selectedUID] || {};
+  saveCard(existing.status || "pending");
+});
+
+$("searchInput").addEventListener("input", renderDashboard);
+$("clearSearch").addEventListener("click", () => {
+  $("searchInput").value = "";
+  renderDashboard();
+});
 </script>
-</body></html>
+</body>
+</html>
+```
